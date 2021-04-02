@@ -70,14 +70,15 @@ def sentences(full_text_input):
     # Iterates through word_list stripping each word of leading and trailing apostrophes and
     # hyphens.
     for word in word_list_with_punctuation:
-        word = word.strip("'-\"")
+        word = word.strip("'-")
+        word = word.strip('"')
         if word != "" and words(word) != []:
             # Appends word sequentially to a list of words in same sentence.
             sentence.append(word)
             # Checks if word is end of sentence, if so, turns sentence list into a string, calls
             # the words function, and appends the list of words into a new list of lists of words
             # in each sentence.
-            if word[-1] in (".", "?", "!"):
+            if word.endswith(".") or word.endswith("?") or word.endswith("!"):
                 sentence_string = " ".join(sentence)
                 sentences_list_of_word_lists.append(words(sentence_string))
                 sentence = []
