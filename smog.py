@@ -65,23 +65,50 @@ def sentences(full_text_input):
     """
     sentence = []
     sentences_list_of_word_lists = []
+    start_quotes = False
+    end_quotes = False
     # Creates list of strings separated by spaces
     word_list_with_punctuation = full_text_input.split()
     # Iterates through word_list stripping each word of leading and trailing apostrophes and
-    # hyphens.
+    # hyphens and chacking for leading and trialing double quotation marks.
     for word in word_list_with_punctuation:
-        word = word.strip("'-")
-        word = word.strip('"')
-        if word != "" and words(word) != []:
-            # Appends word sequentially to a list of words in same sentence.
-            sentence.append(word)
+        if word[-1] == '"':
+            end_quotes = True
+        if word[0] == '"':
+            start_quotes = True
+        word = word.strip("'-\"")
+        if words(word) != []:
             # Checks if word is end of sentence, if so, turns sentence list into a string, calls
             # the words function, and appends the list of words into a new list of lists of words
-            # in each sentence.
-            if word.endswith(".") or word.endswith("?") or word.endswith("!"):
+            # in each sentence.  Also adds back double quotes if present.
+            if word[-1] in (".", "?", "!"):
+                if end_quotes and start_quotes:
+                    sentence.append('"' + word + '"')
+                    end_quotes = False
+                    start_quotes = False
+                elif start_quotes and not end_quotes:
+                    sentence.append('"' + word)
+                    start_quotes = False
+                elif end_quotes and not start_quotes:
+                    sentence.append(word + '"')
+                    end_quotes = False
+                else:
+                    sentence.append(word)
                 sentence_string = " ".join(sentence)
                 sentences_list_of_word_lists.append(words(sentence_string))
                 sentence = []
+            elif end_quotes and start_quotes:
+                sentence.append('"' + word + '"')
+                end_quotes = False
+                start_quotes = False
+            elif start_quotes and not end_quotes:
+                sentence.append('"' + word)
+                start_quotes = False
+            elif end_quotes and not start_quotes:
+                sentence.append(word + '"')
+                end_quotes = False
+            else:
+                sentence.append(word)
 
     return sentences_list_of_word_lists
 
